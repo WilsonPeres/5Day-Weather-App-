@@ -4,58 +4,59 @@ import DayCard from './DayCards';
 import DegreeToggle from './DegreeToggle';
 
 
-    class WeekContainer extends React.Component {
-      state = {
-        fullData: [],
-        dailyData: [],
-        degreeType: "fahrenheit"
-      }
+class WeekContainer extends React.Component {
+  state = {
+    fullData: [],
+    dailyData: [],
+    degreeType: "fahrenheit"
+  }
 
-      updateForecastDegree = event => {
+  updateForecastDegree = event => {
+    this.setState({
+      degreeType: event.target.value
+    }, () => console.log(this.state))
+  }
+
+  componentDidMount = (req) => {
+
+    const zipcode = 28215;
+    const weatherURL =
+      `http://api.openweathermap.org/data/2.5/forecast?zip=${zipcode}&units=metric&APPID=${apiConfig.key}`
+
+    fetch(weatherURL)
+      .then(res => res.json())
+      .then(data => {
+        const dailyData = data.list.filter(reading => reading.dt_txt.includes("18:00:00"))
         this.setState({
-          degreeType: event.target.value
+          fullData: data.list,
+          dailyData: dailyData
         }, () => console.log(this.state))
-      }
-    
-      componentDidMount = (req) => {
-        const zipcode = prompt("what is your Zipcode")
-        const weatherURL =
-        `http://api.openweathermap.org/data/2.5/forecast?zip=${zipcode}&units=metric&APPID=${apiConfig.key}`
-    
-        fetch(weatherURL)
-        .then(res => res.json())
-        .then(data => {
-          const dailyData = data.list.filter(reading => reading.dt_txt.includes("18:00:00"))
-          this.setState({
-            fullData: data.list,
-            dailyData: dailyData
-          }, () => console.log(this.state))
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-      }
-    
-      formatDayCards = () => {
-        return this.state.dailyData.map((reading, index) => <DayCard reading={reading} key={index} degreeType={this.state.degreeType} />)
-      }
-    
-      render() {
-        return (
-          
-            <div className="container">
-            <h1 className="display-1">5-Day</h1>
-            <h1 className="display-1">  Weather Forecast</h1>
-            <DegreeToggle updateForecastDegree={this.updateForecastDegree} degreeType={this.degreeType}/>
-              <div className="row justify-content-center">
-              <div className="container2">
-              {this.formatDayCards()}
-              </div>
-      
-              </div>
-            </div>
-          )
-      }
-    }
-    
-    export default WeekContainer;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+  formatDayCards = () => {
+    return this.state.dailyData.map((reading, index) => <DayCard reading={reading} key={index} degreeType={this.state.degreeType} />)
+  }
+
+  render() {
+    return (
+
+      <div className="container">
+        <h1 className="display-1">5-Day</h1>
+        <h1 className="display-1">  Weather Forecast</h1>
+        <DegreeToggle updateForecastDegree={this.updateForecastDegree} degreeType={this.degreeType} />
+        <h3 className=".display-5">Charlote,NC</h3>
+        <div className="row justify-content-center">
+          <div className="container2">
+            {this.formatDayCards()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+export default WeekContainer;
