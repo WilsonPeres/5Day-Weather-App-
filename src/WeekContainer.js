@@ -19,8 +19,10 @@ class WeekContainer extends React.Component {
 
   componentDidMount = (req) => {
 
+    let Zipcode = prompt("Please enter your Zipcode");
+
     const weatherURL =
-      `http://api.openweathermap.org/data/2.5/forecast?zip=28215&units=metric&APPID=${apiConfig.key}`
+      `http://api.openweathermap.org/data/2.5/forecast?zip=${Zipcode}&units=metric&APPID=${apiConfig.key}`
 
     fetch(weatherURL)
       .then(res => res.json())
